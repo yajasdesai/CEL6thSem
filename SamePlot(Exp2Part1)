@@ -1,0 +1,12 @@
+x = -5:0.5:5;
+y1 = x.^2;
+y2 = x.^3;
+y3 = exp(x);
+y4 = sin(x).*cos(x);
+hold on;
+plot(y1,x,"b");
+plot(y2,x,"r");
+plot(y3,x,"k");
+plot(y4,x,"g");
+xlabel("x");
+ylabel("y");

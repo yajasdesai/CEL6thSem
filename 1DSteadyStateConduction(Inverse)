@@ -41,3 +41,4 @@ x = linspace(0, L, Nx);
 plot(x, T);
 
 plot(x, T);
+t

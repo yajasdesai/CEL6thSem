@@ -1,0 +1,21 @@
+n = 10;
+
+diag_main = 2 * ones(n, 1);
+diag_off = -1 * ones(n-1, 1);
+
+A = diag(diag_main) + diag(diag_off, 1) + diag(diag_off, -1);
+
+[V, D] = eig(A);
+lambda = diag(D);
+b = [500; 0; 0; 0; 0; 0; 0; 0; 0; 100];
+x = zeros(size(b));
+
+for i = 1:length(lambda)
+    x = x + (V(:,i)' * b / lambda(i)) * V(:,i);
+end
+disp('Solution x:');
+disp(x);
+
+plot(x, lambda);
+tic 
+toc

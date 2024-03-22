@@ -1,0 +1,61 @@
+% Material properties for steel
+rho = 7800; % kg/m^3
+cp = 490; % J/kg.K
+k = 50; % W/m.K
+frictionCoefficient = 0.4;
+
+% Disc geometry
+radius = 0.1; % m
+thickness = 0.01; % m
+
+% Discretization
+Nx = 100;
+dx = radius/(Nx-1);
+
+% Time parameters
+totalTime = 10; % sec
+dt = 0.01; % sec
+
+% Braking force and heat generation
+F_brake = 1500; % N
+angular_velocity = 2100 * 2*pi/60; % rad/s
+
+% Heat source due to friction (simplified assumption)
+heat_source = F_brake * angular_velocity * frictionCoefficient / (pi * radius^2 * thickness); 
+
+% Initial temperature (uniform)
+T = ones(Nx,1) * 25; % degCelsius
+
+% Boundary conditions (assuming constant convection coefficient)
+h_conv = 20; % W/m^2.K
+T_amb = 25; % degCelsius
+
+% Loop through time steps
+for n = 1:totalTime/dt
+  % Update temperature at each node
+  for i = 2:Nx-1
+    T(i,n+1) = T(i,n) + dt * k / (rho * cp * dx^2) * ...
+               (T(i+1,n) - 2*T(i,n) + T(i-1,n)) + ...
+               dt * heat_source;
+  end
+
+  % Apply boundary conditions (convection)
+  T(1,n+1) = T_amb + h_conv * dx / (k) * (T_amb - T(2,n));
+  T(Nx,n+1) = T_amb + h_conv * dx / (k) * (T_amb - T(Nx-1,n));
+end
+
+% Plot temperature distribution at final time step
+figure;
+plot(dx*(1:Nx),T(:,end));
+xlabel('Radial position (m)');
+ylabel('Heat (Watts)');
+title('Disc Brake Heat Distribution');
+
+% Plot temperature field using contour plot
+figure;
+[X, Y] = meshgrid(0:dx:radius, 0:dx:thickness);
+contourf(X, Y, T(:,end).' .* ones(size(X)), 20, 'LineColor', 'none');
+colorbar;
+xlabel('Radial position (m)');
+ylabel('Axial position (m)');
+title('Heat Energy at Final Time Step');
